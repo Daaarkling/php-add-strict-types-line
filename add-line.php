@@ -79,7 +79,7 @@ function addStrictTypesLine($code) {
 	// if file contains `<?php` and does not contain `declare(strict_types=1)`
 	if ($openTagPosition >= 0 && !$alreadyContainsLine) {
 		// add the line
-		array_splice($tokens, $openTagPosition+1, 0, ['declare(strict_types=1);']);
+		array_splice($tokens, $openTagPosition+1, 0, ['declare(strict_types=1);' . PHP_EOL]);
 
 		// print it back to string
 		for ($i = 0; $i < count($tokens); $i++) {
