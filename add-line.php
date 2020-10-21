@@ -63,15 +63,23 @@ function addStrictTypesLine($code) {
 			$openTagPosition = $i;
 		}
 
-		// check if there already is line `declare(strict_types=1)`
-		if (is_array($token) && $token[0] === T_DECLARE &&
-			key_exists($i+1, $tokens) && $tokens[$i+1] === '(' &&
-			key_exists($i+2, $tokens) && is_array($tokens[$i+2]) && $tokens[$i+2][1] === 'strict_types' &&
-			key_exists($i+3, $tokens) && $tokens[$i+3] === '=' &&
-			key_exists($i+4, $tokens) && is_array($tokens[$i+4]) && $tokens[$i+4][1] === "1" &&
-			key_exists($i+5, $tokens) && $tokens[$i+5] === ')'
-		) {
-			$alreadyContainsLine = true;
+		elseif ($openTagPosition !== -1) {
+			// skip whitespace
+			if (is_array($token) && $token[0] === T_WHITESPACE) {
+				continue;
+			}
+
+			// check if there already is line `declare(strict_types=1)` immediately after <?php
+			if (is_array($token) && $token[0] === T_DECLARE &&
+				key_exists($i+1, $tokens) && $tokens[$i+1] === '(' &&
+				key_exists($i+2, $tokens) && is_array($tokens[$i+2]) && $tokens[$i+2][1] === 'strict_types' &&
+				key_exists($i+3, $tokens) && $tokens[$i+3] === '=' &&
+				key_exists($i+4, $tokens) && is_array($tokens[$i+4]) && $tokens[$i+4][1] === "1" &&
+				key_exists($i+5, $tokens) && $tokens[$i+5] === ')'
+			) {
+				$alreadyContainsLine = true;
+			}
+
 			break;
 		}
 	}
@@ -79,7 +87,7 @@ function addStrictTypesLine($code) {
 	// if file contains `<?php` and does not contain `declare(strict_types=1)`
 	if ($openTagPosition >= 0 && !$alreadyContainsLine) {
 		// add the line
-		array_splice($tokens, $openTagPosition+1, 0, ['declare(strict_types=1);' . PHP_EOL]);
+		array_splice($tokens, $openTagPosition+1, 0, [PHP_EOL . 'declare(strict_types=1);' . PHP_EOL]);
 
 		// print it back to string
 		for ($i = 0; $i < count($tokens); $i++) {
