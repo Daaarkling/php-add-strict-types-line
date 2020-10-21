@@ -64,8 +64,8 @@ function addStrictTypesLine($code) {
 		}
 
 		elseif ($openTagPosition !== -1) {
-			// skip whitespace
-			if (is_array($token) && $token[0] === T_WHITESPACE) {
+			// skip whitespace & comments
+			if (is_array($token) && ($token[0] === T_WHITESPACE || $token[0] === T_COMMENT)) {
 				continue;
 			}
 
